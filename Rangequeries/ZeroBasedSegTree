@@ -1,0 +1,49 @@
+class SegmentTree{
+    public:
+      vector<ll> tree, data;
+      ll n;
+      SegmentTree(const vll &arr){
+        n = arr.size();  
+        data = arr;
+        tree.resize(4*n,0);
+        build(0,n-1,1);
+      }
+      ll combine(ll a,ll b){
+        return a+b;
+      }
+      void build(int l,int r,int idx){
+        if(l==r){
+            tree[idx]=data[l];
+            return;
+        }
+        int mid=(l+r)/2;
+        build(l,mid,2*idx);
+        build(mid+1,r,2*idx+1);
+        tree[idx]=combine(tree[2*idx],tree[2*idx+1]);
+      }
+      void update(int pos,ll val,int l,int r,int idx){
+         if(l==r){
+            tree[idx]+=val;
+            return;
+         }
+         int mid=(l+r)/2;
+         if(pos<=mid) update(pos,val,l,mid,2*idx);
+         else update(pos,val,mid+1,r,2*idx+1);
+         tree[idx]=combine(tree[2*idx],tree[2*idx+1]);
+      }
+      ll query(int ql,int qr,int l,int r,int idx){
+          if(r<ql || l>qr) return 0;
+          if(ql<=l && r<=qr) return tree[idx];
+          int mid=(l+r)/2;
+          return combine(
+              query(ql,qr,l,mid,2*idx),
+              query(ql,qr,mid+1,r,2*idx+1)
+          );
+      }
+      void update(int pos,ll val){
+        update(pos,val,0,n-1,1);
+      }
+      ll query(int l,int r){
+        return query(l,r,0,n-1,1);
+      }
+}; 
