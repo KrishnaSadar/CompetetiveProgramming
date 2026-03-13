@@ -95,32 +95,40 @@ vector<int> buildSuffix(vector<int>&arr){vector<int>ans(arr.size()+1,0);for(int 
 मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥
  */
 // if adjacent's lowest insertion time is lesser than discovery time of node then it is not bridge
-ll targen(vector<vector<ll>>&adj,int n){
-    ll cnt=1;
-    ll mini=n*(n-1)/2;
-    vector<int>low(n+1,0);
-    vector<int>vis(n+1,-1);
-    vec szT(n+1,1);
-    auto dfs=[&](auto&& dfs,ll u,ll p)->ll{
-        low[u]=cnt;
+class Solution {
+    int cnt;
+    int dfs(int u,int p,vector<vector<int>>&adj,vector<int>&vis,vector<int>&low,vector<vector<int>>&ans){
+        if(vis[u]!=-1) return low[u];
         vis[u]=cnt;
+        low[u]=cnt;
         cnt++;
         for(auto v:adj[u]){
             if(v==p) continue;
-            if(vis[v]==-1){
-                ll x=dfs(dfs,v,u);
-                szT[u]+=x;
-                 low[u]=min(low[u],low[v]);
-                if(low[v]>vis[u]){
-                    ll y=n-x;
-                    mini=min(mini,(x*(x-1)/2)+(y*(y-1)/2));
-                }
+            int temp=dfs(v,u,adj,vis,low,ans);
+            low[u] = min(low[u], low[v]);
+            if(temp>vis[u]){
+                ans.push_back({u,v});
             }else{
-                    low[u]=min(low[u],low[v]);
-                }
+                low[u] = min(low[u], vis[v]);
+            }
         }
-        return szT[u];
-    };
-    dfs(dfs,1,-1);
-    return mini;
-}
+        return low[u];
+    }
+public:
+    vector<vector<int>> criticalConnections(int n, vector<vector<int>>& edges) {
+         vector<vector<int>>adj(n);
+         for(int i=0;i<edges.size();i++){
+            int u=edges[i][0];
+            int v=edges[i][1];
+            cout<<u<<" "<<v<<"\n";
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+         }
+         vector<int>vis(n,-1);
+         vector<int>low(n,-1);
+        vector<vector<int>>ans;
+        cnt=1;
+         dfs(0,-1,adj,vis,low,ans);
+       return ans;
+    }
+};
